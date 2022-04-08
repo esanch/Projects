@@ -1,0 +1,89 @@
+---
+title: "Final Project"
+author: "Elizabeth Earl"
+date: '2021-03-05'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+***
+##### Cleaning data
+```{r include=FALSE} 
+library(ggplot2)
+library(reshape2) 
+setwd("C:/Users/Eearl/OneDrive/Documents/School/520")
+players_df <- read.csv("playsUpdated.csv")
+matches_df <-read.csv("matchesUpdated.csv")
+players_df$kickoff_time<- as.Date(players_df$kickoff_time,"%m/%d/%Y")
+
+```
+```{r eval=FALSE}
+head(players_df)
+```
+![players_df](players.jpg)
+
+```{r eval=FALSE}
+head(matches_df)
+```
+![matches_df](matches.jpg)
+
+***
+##### Visualization
+#### Player performace
+```{r include=FALSE}
+Vardy <- subset( players_df$goals_scored  , players_df$full=="Jamie Vardy")
+Emerick <-subset( players_df$goals_scored  , players_df$full=="Pierre-Emerick Aubameyang")
+Ings <-subset( players_df$goals_scored  , players_df$full=="Danny Ings")
+Sterling <- subset( players_df$goals_scored  , players_df$full=="Raheem Sterling")
+Salah <- subset( players_df$goals_scored  , players_df$full=="Mohamed Salah")
+Kane <-subset( players_df$goals_scored  , players_df$full=="Harry Kane")
+Mane <-subset( players_df$goals_scored  , players_df$full=="Sadio Man?")
+Jimenez <-subset( players_df$goals_scored  , players_df$full=="Ra?l Jim?nez")
+Martial <-subset( players_df$goals_scored  , players_df$full=="Anthony Martial")
+Rashford <-subset( players_df$goals_scored  , players_df$full=="Marcus Rashford")
+
+top10 <- data.frame(Vardy, Emerick, Ings, Sterling,
+                      Salah, Kane, Mane, Jimenez, Martial, Rashford)
+top10 <-melt(top10)
+```
+```{r echo=FALSE}
+ggplot(top10, aes(x = top10$variable, y = top10$value,colour = top10$variable)) + geom_point() + labs(title = "Goals Scored by Top 10 Players",
+       x = "Player", y = "Goals Scored", color="Player")
+ggplot(top10, aes(x = top10$variable, y = top10$value,colour = top10$variable)) + geom_bar(stat="identity") + labs(title = "Total Goals Scored All Season", x = "Player", y = "Goals Scored", color="Player")
+
+```
+
+***
+#### Top Player's Teams
+```{r include=FALSE}
+VardyTeam <- subset( players_df$team  , players_df$full=="Jamie Vardy")
+EmerickTeam <-subset( players_df$team  , players_df$full=="Pierre-Emerick Aubameyang")
+IngsTeam <-subset( players_df$team  , players_df$full=="Danny Ings")
+SterlingTeam <- subset( players_df$team  , players_df$full=="Raheem Sterling")
+SalahTeam <- subset( players_df$team  , players_df$full=="Mohamed Salah")
+KaneTeam <-subset( players_df$team  , players_df$full=="Harry Kane")
+ManeTeam <-subset( players_df$team  , players_df$full=="Sadio Man?")
+JimenezTeam <-subset( players_df$team  , players_df$full=="Ra?l Jim?nez")
+MartialTeam <-subset( players_df$team  , players_df$full=="Anthony Martial")
+RashfordTeam <-subset( players_df$team  , players_df$full=="Marcus Rashford")
+teams<- data.frame(VardyTeam, EmerickTeam, IngsTeam, SterlingTeam,
+                   SalahTeam, KaneTeam, ManeTeam, JimenezTeam, MartialTeam, RashfordTeam)
+teams<-teams[1,]
+teams <- as.data.frame(t(teams))
+merged_df <-merge(teams, matches_df,by.x=c('1'),by.y=c('team_name'),all.x=T)
+```
+```{r echo=FALSE}
+ggplot(teams, aes(teams$'1')) +
+  geom_bar(fill = "#0073C2FF") + labs(title = "Teams with \'Top\' players",x = "Team", y = "Frequency")
+```
+
+***
+#### Team performance
+```{r echo=FALSE}
+ggplot(merged_df, aes(x=merged_df$'1', y= merged_df$wins,colour = merged_df$'1')) + geom_point() + labs(title = "Wins by \'Top\' Player Teams",
+       subtitle="38 possible wins",
+       x = "Team", y = "Wins", color="Teams")
+ggplot(matches_df, aes(x=matches_df$team_name, y= matches_df$wins,colour = matches_df$team_name)) + geom_point() +scale_x_discrete(guide = guide_axis(n.dodge=3))+ labs(title = "Wins by Team",subtitle="38 possible wins",x = "Team", y = "Wins", color="Teams")
+
+```
