@@ -1,0 +1,1 @@
+### Data for Amazon's top toys is too large to upload but can be downloaded [here](https://www.kaggle.com/code/residentmario/exploring-toy-products-on-amazon/data?select=amazon_co-ecommerce_sample.csv)
